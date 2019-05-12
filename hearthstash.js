@@ -34,7 +34,19 @@ function getDeckName() {
 }
 
 function getDeckPath() {
-  return path.join(repo, deckName);
+  return path.join(getDeckClassPath(), deckName);
+}
+
+function getDeckClassPath() {
+  return path.join(repo, getDeckClass());
+}
+
+function getDeckClass() {
+  const match = clipboard.match(/# Class: (?<deckClass>.+)/);
+
+  if (match) {
+    return match.groups.deckClass;
+  }
 }
 
 function deckNotStaged() {
@@ -83,11 +95,17 @@ function activateFrontmostApp() {
 }
 
 function addDeck() {
+  const deckClassPath = getDeckClassPath();
+
+  if (!fs.existsSync(deckClassPath)) {
+    fs.mkdirSync(deckClassPath);
+  }
+
   fs.writeFileSync(deckPath, clipboard);
 
   // Add file in case it's untracked
   child_process.execSync(`
-    git add '${deckName}';
-    git commit -m 'Saved "${deckName}"' '${deckName}'
+    git add '${deckPath}';
+    git commit -m 'Saved "${deckName}"' '${deckPath}'
   `, { cwd: repo });
 }
