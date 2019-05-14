@@ -103,9 +103,16 @@ function addDeck() {
 
   fs.writeFileSync(deckPath, clipboard);
 
+  const deckPathEscaped = escapeDoubleQuotes(deckPath);
+  const commitMessage = `Saved: ${escapeDoubleQuotes(deckName)}`;
+
   // Add file in case it's untracked
   child_process.execSync(`
-    git add '${deckPath}';
-    git commit -m 'Saved "${deckName}"' '${deckPath}'
+    git add "${deckPathEscaped}";
+    git commit -m "${commitMessage}" "${deckPathEscaped}"
   `, { cwd: repo });
+}
+
+function escapeDoubleQuotes(string) {
+  return string.replace(/"/g, String.raw`\"`);
 }
