@@ -95,6 +95,11 @@ function activateFrontmostApp() {
 }
 
 function addDeck() {
+  writeDeck();
+  commitDeck();
+}
+
+function writeDeck() {
   const deckClassPath = getDeckClassPath();
 
   if (!fs.existsSync(deckClassPath)) {
@@ -102,7 +107,9 @@ function addDeck() {
   }
 
   fs.writeFileSync(deckPath, clipboard);
+}
 
+function commitDeck() {
   const deckPathEscaped = escapeDoubleQuotes(deckPath);
   const commitMessage = `Saved: ${escapeDoubleQuotes(deckName)}`;
 
