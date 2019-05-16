@@ -42,7 +42,7 @@ function getDeckClassPath() {
 }
 
 function getDeckClass() {
-  const match = clipboard.match(/# Class: (?<deckClass>.+)/);
+  const match = clipboard.match(/^# Class: (?<deckClass>.+)$/m);
 
   if (match) {
     return match.groups.deckClass;
