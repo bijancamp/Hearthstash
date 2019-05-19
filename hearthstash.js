@@ -9,6 +9,7 @@ let clipboardOld;
 let clipboard;
 let deckName;
 let deckPath;
+let deckTracked;
 
 setInterval(() => {
   clipboardOld = clipboard;
@@ -95,6 +96,8 @@ function activateFrontmostApp() {
 }
 
 function addDeck() {
+  deckTracked = fs.existsSync(deckPath);
+
   writeDeck();
   commitDeck();
 }
@@ -111,13 +114,20 @@ function writeDeck() {
 
 function commitDeck() {
   const deckPathEscaped = escapeDoubleQuotes(deckPath);
-  const commitMessage = `Saved: ${escapeDoubleQuotes(deckName)}`;
 
   // Add file in case it's untracked
   child_process.execSync(`
     git add "${deckPathEscaped}";
-    git commit -m "${commitMessage}" "${deckPathEscaped}"
+    git commit -m "${getCommitMessage()}" "${deckPathEscaped}"
   `, { cwd: repo });
+}
+
+function getCommitMessage() {
+  return `${getCommitMessagePrefix()}: ${escapeDoubleQuotes(deckName)}`;
+}
+
+function getCommitMessagePrefix() {
+  return deckTracked ? "Edited" : "Added";
 }
 
 function escapeDoubleQuotes(string) {
