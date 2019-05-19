@@ -1,7 +1,7 @@
 # hearthstash
 Store your Hearthstone decks in Git.
 
-Currently with macOS support only. Happy to integrate support for other
+Currently with macOS support only, but I'm happy to integrate support for other
 environments.
 
 ## Screenshots
