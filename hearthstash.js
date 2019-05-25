@@ -5,8 +5,8 @@ const path = require('path');
 
 const repo = process.argv[2];
 
-let clipboardOld;
 let clipboard;
+let clipboardOld;
 let deckName;
 let deckPath;
 let deckTracked;
