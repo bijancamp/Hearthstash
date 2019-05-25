@@ -3,13 +3,14 @@ const clipboardy = require('clipboardy');
 const fs = require('fs');
 const path = require('path');
 
-const repo = process.argv[2];
+const repos = process.argv.slice(2);
 
 let clipboardOld;
 let clipboard;
 let deckName;
 let deckPath;
 let deckTracked;
+let repo;
 
 setInterval(() => {
   clipboardOld = clipboard;
@@ -19,9 +20,10 @@ setInterval(() => {
     return;
   }
 
-  deckPath = getDeckPath();
-
-  if (clipboard !== clipboardOld && deckNotStaged() && userWantsAddition()) {
+  if (clipboard !== clipboardOld
+    && deckNotStagedInAllRepos()
+    && (repo = getRepo())) {
+    deckPath = getDeckPath(repo);
     addDeck();
   }
 }, 400);
@@ -50,13 +52,29 @@ function getDeckClass() {
   }
 }
 
-function deckNotStaged() {
+function deckNotStagedInAllRepos() {
+  for (repo of repos) {
+    deckPath = getDeckPath();
+
+    if (deckNotStaged()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function deckNotStaged(deckPath) {
   try {
     return fs.readFileSync(deckPath, { encoding: 'utf-8' }) !== clipboard;
   }
   catch (e) {
     return true;
   }
+}
+
+function getRepo() {
+  return repos.length === 1 && userWantsAddition() ? repos[0] : getRepoChoice();
 }
 
 function userWantsAddition() {
@@ -80,6 +98,22 @@ function userWantsAddition() {
   }
 
   return true;
+}
+
+function getRepoChoice() {
+  const result = child_process.execSync(`
+    osascript -l JavaScript -e '
+      const se = Application("System Events");
+      se.includeStandardAdditions = true;
+      se.chooseFromList([${repos.map(r => `"${r}"`).join(', ')}], {
+        withTitle: "Save Deck",
+        withPrompt: "Pick repository to save deck in:",
+        defaultItems: ["HS Decks"],
+        okButtonName: "Save"
+      });'
+  `, { encoding: 'utf-8' }).slice(0, -1);  // drops trailing "\n"
+
+  return result !== 'false' ? result : null
 }
 
 // Refocuses after alerts
