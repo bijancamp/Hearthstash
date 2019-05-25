@@ -68,7 +68,8 @@ function userWantsAddition() {
         se.displayDialog("Save deck to repository?", {
           buttons: ["No", "Yes"],
           defaultButton: "Yes",
-          cancelButton: "No"
+          cancelButton: "No",
+          withTitle: "Hearthstash"
         });'
     `, { stdio: 'ignore' });
   }
