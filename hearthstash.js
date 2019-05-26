@@ -100,7 +100,7 @@ function addDeck() {
   deckTracked = fs.existsSync(deckPath);
 
   writeDeck();
-  commitDeck();
+  commitDeck(getCommitMessage(deckName, deckTracked));
 }
 
 function writeDeck() {
@@ -113,21 +113,22 @@ function writeDeck() {
   fs.writeFileSync(deckPath, clipboard);
 }
 
-function commitDeck() {
+function commitDeck(message) {
   const deckPathEscaped = escapeDoubleQuotes(deckPath);
+  const messageEscaped = escapeDoubleQuotes(message);
 
   // Add file in case it's untracked
   child_process.execSync(`
     git add "${deckPathEscaped}";
-    git commit -m "${getCommitMessage()}" "${deckPathEscaped}"
+    git commit -m "${messageEscaped}" "${deckPathEscaped}"
   `, { cwd: repo });
 }
 
-function getCommitMessage() {
-  return `${getCommitMessagePrefix()}: ${escapeDoubleQuotes(deckName)}`;
+function getCommitMessage(deckName, deckTracked) {
+  return `${getCommitMessagePrefix(deckTracked)}: ${deckName}`;
 }
 
-function getCommitMessagePrefix() {
+function getCommitMessagePrefix(deckTracked) {
   return deckTracked ? "Edited" : "Added";
 }
 
