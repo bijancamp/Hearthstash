@@ -15,7 +15,7 @@ setInterval(() => {
   clipboardOld = clipboard;
   clipboard = clipboardy.readSync();
 
-  if (!(deckName = getDeckName())) {
+  if (!(deckName = getDeckName(clipboard))) {
     return;
   }
 
@@ -26,8 +26,8 @@ setInterval(() => {
   }
 }, 400);
 
-function getDeckName() {
-  const match = clipboard.match(/^### (?<deckName>.+)$/m);
+function getDeckName(deckText) {
+  const match = deckText.match(/^### (?<deckName>.+)$/m);
 
   if (match) {
     return match.groups.deckName;
