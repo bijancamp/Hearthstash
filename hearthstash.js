@@ -100,7 +100,7 @@ function addDeck() {
   deckTracked = fs.existsSync(deckPath);
 
   writeDeck();
-  commitDeck(getCommitMessage(deckName, deckTracked));
+  commitDeck(deckPath, getCommitMessage(deckName, deckTracked));
 }
 
 function writeDeck() {
@@ -113,7 +113,7 @@ function writeDeck() {
   fs.writeFileSync(deckPath, clipboard);
 }
 
-function commitDeck(message) {
+function commitDeck(deckPath, message) {
   const deckPathEscaped = escapeDoubleQuotes(deckPath);
   const messageEscaped = escapeDoubleQuotes(message);
 
